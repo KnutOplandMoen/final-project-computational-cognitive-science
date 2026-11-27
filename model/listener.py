@@ -9,7 +9,26 @@ from model.prior import prior
 from model.fit import Record, Story, pi
 
 @memo
-def listener[note: Story, h: Record, a: Story](rho, alpha):  
+def listener[note: Story, h: Record, a: Story](rho, alpha):
+    """
+    Computes the probability that the listener adopts a given story `a` based on the observed note `note` and record `h`, using the model parameters `rho` and `alpha`.
+    
+    Args:
+        note::Story
+            The observed note of type `Story`.
+        h::Record
+            The observed record of type `Record`.
+        a::Story
+            The story the listener may adopt of type `Story`.
+        rho::float
+            Model parameter for the prior probability.
+        alpha::float
+            Model parameter for the listener's decision-making.
+    Returns:
+        a::float
+            Probability that the listener adopts story `a`.
+
+    """ 
     listener: knows(note, h)  
     listener: thinks[
         world: knows(note),

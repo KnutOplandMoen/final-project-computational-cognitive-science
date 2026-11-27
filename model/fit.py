@@ -61,6 +61,19 @@ def p_ball(m, i, past, ball):
 # ---------------------------------------------------------------- memo model
 @memo
 def fit[m: Story, h: Record]():
+    """Computes the probability of a record `h` given a story `m`.
+
+    Args:
+        m::Story
+            The story of type `Story`.
+        h::Record
+            The observed record of type `Record`.
+
+    Returns:
+        a::float
+            p(h|m) - Probability of the record `h` given story `m`.
+    """
+
     urn: knows(m)
     urn: chooses(d0 in Ball, wpp=p_ball(m, 0, 0, d0))
     urn: chooses(d1 in Ball, wpp=p_ball(m, 1, d0, d1))

@@ -29,6 +29,7 @@ def listener[note: Story, h: Record, a: Story](rho, alpha):
             Probability that the listener adopts story `a`.
 
     """ 
+    
     listener: knows(note, h)  
     listener: thinks[
         world: knows(note),

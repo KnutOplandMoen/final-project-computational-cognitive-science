@@ -18,33 +18,13 @@ jax.config.update("jax_enable_x64", True)                   # exact to ~1e-16, n
 import jax.numpy as np
 from memo import memo
 
-N_DRAWS = 6
+from model.config import N_DRAWS
+from model.stories import NAMES, URN, Record, Story, record  # noqa: F401  (re-exported)
 
 
 class Ball(IntEnum):
     GREEN = 0
     RED = 1
-
-
-# ---------------------------------------------------------------- stories
-def _stories():
-    """Name and urn of each draw (1..6) for ORD and the 23 false stories."""
-    out = [("ORD", [0] * 6)]
-    for c in range(1, 6):                                   # reset(c)
-        out.append((f"reset({c})", [0 if d <= c else 1 for d in range(1, 7)]))
-    for j in range(2, 7):                                   # other(j, c)
-        for c in range(j, 7):
-            out.append((f"other({j},{c})", [1 if j <= d <= c else 0 for d in range(1, 7)]))
-    for l in range(1, 4):                                   # pattern(l)
-        out.append((f"pattern({l})", [((d - 1) // l) % 2 for d in range(1, 7)]))
-    return out
-
-
-STORIES = _stories()
-NAMES = [name for name, _ in STORIES]
-URN = np.array([urns for _, urns in STORIES])               # (24, 6)
-Story = np.arange(len(STORIES))
-Record = np.arange(2 ** N_DRAWS)
 
 
 @jax.jit
@@ -85,18 +65,22 @@ def fit[m: Story, h: Record]():
 
 
 # ---------------------------------------------------------------- helpers
-def record(s):
-    """'GGGGRR' -> record index."""
-    return sum(1 << i for i, c in enumerate(s) if c == "R")
+FIT = fit()                                                 # (24 stories, 64 records) table of pi_m(h)
+
+
+@jax.jit
+def fit_table(m, h):
+    """pi_m(h) looked up by index, so other memo models can use it."""
+    return FIT[m, h]
 
 
 def pi(story, rec):
     """pi_m(h) for a story name such as 'reset(4)' and a record such as 'GGGGRR'."""
-    return float(fit()[NAMES.index(story), record(rec)])
+    return float(FIT[NAMES.index(story), record(rec)])
 
 
 if __name__ == "__main__":
-    F = fit()                                               # (24 stories, 64 records)
+    F = FIT
     print("each story sums to 1 over records:", bool(np.allclose(F.sum(axis=1), 1)))
     for rec, stories in [("GGGGRR", ["ORD", "reset(4)", "other(5,6)"]),
                          ("GGGRRR", ["ORD", "reset(3)", "pattern(3)", "other(4,6)"])]:

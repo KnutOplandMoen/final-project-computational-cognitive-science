@@ -17,7 +17,9 @@ B_LOW, B_HIGH = F(3, 10), F(7, 10)  # b uniform on [B_LOW, B_HIGH] when averagin
 
 # ---------------------------------------------------------------- the prior parameters
 KAPPA = 3                   # kinds the listener has in mind (3 = list shown; 1 = only the note)
-RHO = F(1, 4)          # prior chance of the ordinary urn 
+RHO = F(1, 4)          # prior chance of the ordinary urn
+A_KAPPA = 1                 # exponent on kappa: kinds weigh in as kappa ** A_KAPPA
+A_NU = 1                    # exponent on n_k: versions in mind nu = n_k ** A_NU (0 = only the named one, 1 = all)
 
 # ---------------------------------------------------------------- the listener's rule parameters
 ALPHA_SAMPLER = 1               # graded rule with alpha = 1: adopt with the posterior probability
